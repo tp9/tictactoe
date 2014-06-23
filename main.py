@@ -41,13 +41,17 @@ def main():
     board = [[None] * 3 for i in range(3)]
     # For testing only
     board[0][0] = PLAYER
+    board[0][1] = COMPUTER
     
     while True:
         # Make tile rects
         for y in range(len(board)):
             for x in range(len(board[y])):
-                if board[y][x] == PLAYER:
-                    surf, surfrect = FONT.render('X', DARKGRAY, None)
+                if board[y][x] in (PLAYER, COMPUTER):
+                    if board[y][x] == PLAYER:
+                        surf, surfrect = FONT.render('X', DARKGRAY, None)
+                    elif board[y][x] == COMPUTER:
+                        surf, surfrect = FONT.render('O', DARKGRAY, None)                
                     surfrect.center = (int(XMARGIN + (x * TILESIZE) + HALFTILE), int(YMARGIN + (y * TILESIZE) + HALFTILE))
                     DISPLAYSURF.blit(surf, surfrect)
         # Draw board lines
