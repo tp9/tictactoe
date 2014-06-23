@@ -2,15 +2,15 @@ import pygame
 from pygame.locals import *
 
 # Constants
-WINDOWWIDTH = 400
-WINDOWHEIGHT= 300
-TILESIZE    = 60
+WINDOWWIDTH = 600
+WINDOWHEIGHT= 500
+TILESIZE    = 120
 BOARDWIDTH  = 3
 BOARDHEIGHT = 3
 MARKERSIZE  = 40
 
-XMARGIN = int((WINDOWWIDTH - (BOARDWIDTH * TILESIZE) - MARKERSIZE) / 2)
-YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * TILESIZE) - MARKERSIZE) / 2)
+XMARGIN = int((WINDOWWIDTH - (BOARDWIDTH * TILESIZE)) / 2)
+YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * TILESIZE)) / 2)
 
 # Colors
 WHITE       = (255, 255, 255)
@@ -26,12 +26,12 @@ def main():
     
     while True:
         # Draw board
-        for x in range(0, (BOARDWIDTH + 1) * TILESIZE, TILESIZE):
-            pygame.draw.line(DISPLAYSURF, DARKGRAY, (x + XMARGIN + MARKERSIZE,
-                YMARGIN + MARKERSIZE), (x + XMARGIN + MARKERSIZE, WINDOWHEIGHT - YMARGIN))
-        for y in range(0, (BOARDWIDTH + 1) * TILESIZE, TILESIZE):
-            pygame.draw.line(DISPLAYSURF, DARKGRAY, (XMARGIN + MARKERSIZE,
-                y + YMARGIN + MARKERSIZE), (WINDOWWIDTH - (MARKERSIZE * 2), y + YMARGIN + MARKERSIZE))
+        for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
+            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
+               (x + XMARGIN, YMARGIN), (x + XMARGIN, WINDOWHEIGHT - YMARGIN), 6)
+        for y in range(TILESIZE, BOARDHEIGHT * TILESIZE, TILESIZE):
+            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
+                (XMARGIN, y + YMARGIN), (WINDOWWIDTH - XMARGIN, y + YMARGIN), 6)
         
         for event in pygame.event.get():
             if event.type == QUIT:
