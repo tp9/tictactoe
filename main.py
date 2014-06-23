@@ -1,3 +1,4 @@
+# coding=UTF8
 import pygame, os, sys, random
 import pygame.freetype
 from pygame.locals import *
@@ -30,6 +31,18 @@ def left_top_coords(tilex, tiley):
     left = tilex * TILESIZE + XMARGIN
     top = tiley * TILESIZE + YMARGIN
     return left, top
+    
+def player_wins(board, current_player):
+    if [current_player, current_player, current_player] in (
+        board[0], board[1], board[2],
+        [board[0][0], board[1][0], board[2][0]],
+        [board[0][1], board[1][1], board[2][1]],
+        [board[0][2], board[1][2], board[2][2]],
+        [board[0][0], board[1][1], board[2][2]],
+        [board[2][0], board[1][1], board[0][2]] ):
+        return True
+    else:
+        return False
 
 def main():
     #global WINDOWWIDTH, WINDOWHEIGHT, TILESIZE, BOARDWIDTH, BOARDHEIGHT, MARKERSIZE, XMARGIN, YMARGIN
@@ -39,8 +52,10 @@ def main():
     FONT = pygame.freetype.Font(None, FONTSIZE)
     
     board = [[None] * 3 for i in range(3)]
+    game_over = False
+    winner = None
     
-    while True:
+    while not game_over:
         mouse_clicked = False
         # Event handler
         for event in pygame.event.get():
@@ -60,19 +75,26 @@ def main():
                     tile_rect = pygame.Rect(leftpos, toppos, TILESIZE, TILESIZE)
                     if tile_rect.collidepoint(mousex, mousey) and board[tiley][tilex] == None:
                         board[tiley][tilex] = PLAYER
-                        # Make computer move
-                        tile_available = False
-                        for y in range(BOARDHEIGHT):
-                            if None in board[y]:
-                                tile_available = True
-                                break;
-                        if tile_available:
-                            while True:
-                                compx = random.randint(0, BOARDWIDTH-1)
-                                compy = random.randint(0, BOARDHEIGHT-1)
-                                if board[compy][compx] == None:
-                                    break
+                        if player_wins(board, PLAYER):
+                            game_over = True
+                            winner = PLAYER
+                        else:
+                            # Make computer move
+                            tile_available = False
+                            for y in range(BOARDHEIGHT):
+                                if None in board[y]:
+                                    tile_available = True
+                                    break;
+                            if tile_available:
+                                while True:
+                                    compx = random.randint(0, BOARDWIDTH-1)
+                                    compy = random.randint(0, BOARDHEIGHT-1)
+                                    if board[compy][compx] == None:
+                                        break
                             board[compy][compx] = COMPUTER
+                            if player_wins(board, COMPUTER):
+                                game_over = True
+                                winner = COMPUTER
         # Draw board lines
         for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
             pygame.draw.line(DISPLAYSURF, DARKGRAY, 
@@ -92,5 +114,6 @@ def main():
                     DISPLAYSURF.blit(surf, surfrect)
             
         pygame.display.update()
+    print(winner, "wins!")
 
 if __name__ == '__main__': main()
