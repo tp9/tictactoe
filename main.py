@@ -39,8 +39,6 @@ def main():
     FONT = pygame.freetype.Font(None, FONTSIZE)
     
     board = [[None] * 3 for i in range(3)]
-    # For testing only
-    board[0][1] = COMPUTER
     
     while True:
         mouse_clicked = False
@@ -63,12 +61,18 @@ def main():
                     if tile_rect.collidepoint(mousex, mousey) and board[tiley][tilex] == None:
                         board[tiley][tilex] = PLAYER
                         # Make computer move
-                        compx = random.randint(0, BOARDWIDTH-1)
-                        compy = random.randint(0, BOARDHEIGHT-1)
-                        while board[compy][compx] != None:
+                        tile_available = False
+                        for y in range(BOARDHEIGHT):
+                            if None in board[y]:
+                                tile_available = True
+                                break;
+                        if tile_available:
                             compx = random.randint(0, BOARDWIDTH-1)
                             compy = random.randint(0, BOARDHEIGHT-1)
-                        board[compy][compx] = COMPUTER
+                            while board[compy][compx] != None:
+                                compx = random.randint(0, BOARDWIDTH-1)
+                                compy = random.randint(0, BOARDHEIGHT-1)
+                            board[compy][compx] = COMPUTER
         # Draw board lines
         for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
             pygame.draw.line(DISPLAYSURF, DARKGRAY, 
