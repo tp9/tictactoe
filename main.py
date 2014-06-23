@@ -91,7 +91,10 @@ def main():
                                     compy = random.randint(0, BOARDHEIGHT-1)
                                     if board[compy][compx] == None:
                                         break
-                            board[compy][compx] = COMPUTER
+                                board[compy][compx] = COMPUTER
+                            else:
+                                game_over = True
+                                winner = 'No one'
                             if player_wins(board, COMPUTER):
                                 game_over = True
                                 winner = COMPUTER
@@ -116,4 +119,6 @@ def main():
         pygame.display.update()
     print(winner, "wins!")
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': 
+    while True:
+        main()
