@@ -67,11 +67,11 @@ def main():
                                 tile_available = True
                                 break;
                         if tile_available:
-                            compx = random.randint(0, BOARDWIDTH-1)
-                            compy = random.randint(0, BOARDHEIGHT-1)
-                            while board[compy][compx] != None:
+                            while True:
                                 compx = random.randint(0, BOARDWIDTH-1)
                                 compy = random.randint(0, BOARDHEIGHT-1)
+                                if board[compy][compx] == None:
+                                    break
                             board[compy][compx] = COMPUTER
         # Draw board lines
         for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
