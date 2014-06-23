@@ -40,10 +40,35 @@ def main():
     
     board = [[None] * 3 for i in range(3)]
     # For testing only
-    board[0][0] = PLAYER
     board[0][1] = COMPUTER
     
     while True:
+        mouse_clicked = False
+        # Event handler
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == MOUSEBUTTONUP:
+                mousex, mousey = event.pos
+                mouse_clicked = True
+            elif event.type == MOUSEMOTION:
+                mousex, mousey = event.pos
+        if mouse_clicked:
+            for tiley in range(len(board)):
+                for tilex in range(len(board[tiley])):
+                    leftpos = tilex * TILESIZE + XMARGIN
+                    toppos = tiley * TILESIZE + YMARGIN
+                    tile_rect = pygame.Rect(leftpos, toppos, TILESIZE, TILESIZE)
+                    if tile_rect.collidepoint(mousex, mousey) and board[tiley][tilex] == None:
+                        board[tiley][tilex] = PLAYER
+        # Draw board lines
+        for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
+            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
+               (x + XMARGIN, YMARGIN), (x + XMARGIN, WINDOWHEIGHT - YMARGIN), 6)
+        for y in range(TILESIZE, BOARDHEIGHT * TILESIZE, TILESIZE):
+            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
+                (XMARGIN, y + YMARGIN), (WINDOWWIDTH - XMARGIN, y + YMARGIN), 6)
         # Make tile rects
         for y in range(len(board)):
             for x in range(len(board[y])):
@@ -54,18 +79,6 @@ def main():
                         surf, surfrect = FONT.render('O', DARKGRAY, None)                
                     surfrect.center = (int(XMARGIN + (x * TILESIZE) + HALFTILE), int(YMARGIN + (y * TILESIZE) + HALFTILE))
                     DISPLAYSURF.blit(surf, surfrect)
-        # Draw board lines
-        for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
-            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
-               (x + XMARGIN, YMARGIN), (x + XMARGIN, WINDOWHEIGHT - YMARGIN), 6)
-        for y in range(TILESIZE, BOARDHEIGHT * TILESIZE, TILESIZE):
-            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
-                (XMARGIN, y + YMARGIN), (WINDOWWIDTH - XMARGIN, y + YMARGIN), 6)
-        
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
             
         pygame.display.update()
 
