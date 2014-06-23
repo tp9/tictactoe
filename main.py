@@ -1,4 +1,4 @@
-import pygame
+import pygame, os, sys, random
 import pygame.freetype
 from pygame.locals import *
 
@@ -55,13 +55,20 @@ def main():
             elif event.type == MOUSEMOTION:
                 mousex, mousey = event.pos
         if mouse_clicked:
-            for tiley in range(len(board)):
-                for tilex in range(len(board[tiley])):
+            for tiley in range(BOARDHEIGHT):
+                for tilex in range(BOARDWIDTH):
                     leftpos = tilex * TILESIZE + XMARGIN
                     toppos = tiley * TILESIZE + YMARGIN
                     tile_rect = pygame.Rect(leftpos, toppos, TILESIZE, TILESIZE)
                     if tile_rect.collidepoint(mousex, mousey) and board[tiley][tilex] == None:
                         board[tiley][tilex] = PLAYER
+                        # Make computer move
+                        compx = random.randint(0, BOARDWIDTH-1)
+                        compy = random.randint(0, BOARDHEIGHT-1)
+                        while board[compy][compx] != None:
+                            compx = random.randint(0, BOARDWIDTH-1)
+                            compy = random.randint(0, BOARDHEIGHT-1)
+                        board[compy][compx] = COMPUTER
         # Draw board lines
         for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
             pygame.draw.line(DISPLAYSURF, DARKGRAY, 
