@@ -21,17 +21,6 @@ YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * TILESIZE)) / 2)
 WHITE       = (255, 255, 255)
 DARKGRAY    = (40, 40, 40)
 
-def left_top_coords(tilex, tiley):
-    '''
-    returns left and top pixel coords
-    tilex: int
-    tiley: int
-    return: int, int
-    '''
-    left = tilex * TILESIZE + XMARGIN
-    top = tiley * TILESIZE + YMARGIN
-    return left, top
-    
 def player_wins(board, current_player):
     if [current_player, current_player, current_player] in (
         board[0], board[1], board[2],
