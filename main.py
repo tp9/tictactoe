@@ -1,7 +1,8 @@
 # coding=UTF8
-import pygame, os, sys, random
+import pygame, os, sys, random, copy
 import pygame.freetype
 from pygame.locals import *
+from pprint import pprint as pp
 
 # Constants
 PLAYER = 'player'
@@ -21,6 +22,14 @@ YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * TILESIZE)) / 2)
 WHITE       = (255, 255, 255)
 DARKGRAY    = (40, 40, 40)
 
+def tile_available(board):
+    tile_available = False
+    for y in range(BOARDHEIGHT):
+        if None in board[y]:
+            tile_available = True
+            break;    
+    return tile_available
+
 def player_wins(board, current_player):
     if [current_player, current_player, current_player] in (
         board[0], board[1], board[2],
@@ -33,6 +42,36 @@ def player_wins(board, current_player):
     else:
         return False
 
+def minimax(board, player):
+    if player_wins(board, PLAYER):
+        return(-1, None)
+    elif player_wins(board, COMPUTER):
+        return(+1, None)
+    elif not tile_available(board):
+        return (0, None)
+    elif player == PLAYER:
+        best_move = (-2, None)
+        for y in range(BOARDHEIGHT):
+            for x in range(BOARDWIDTH):
+                if board[y][x] == None:
+                    new_board = copy.deepcopy(board)
+                    new_board[y][x] = PLAYER
+                    value = minimax(new_board, COMPUTER)[0]
+                    if value>best_move[0]:
+                        best_move = (value,(x,y))
+        return best_move
+    else:
+        best_move = (+2, None)
+        for y in range(BOARDHEIGHT):
+            for x in range(BOARDWIDTH):
+                if board[y][x] == None:
+                    new_board = copy.deepcopy(board)
+                    new_board[y][x] = COMPUTER
+                    value = minimax(new_board, PLAYER)[0]
+                    if value<best_move[0]:
+                        best_move = (value,(x,y))
+        return best_move        
+        
 def main():
     #global WINDOWWIDTH, WINDOWHEIGHT, TILESIZE, BOARDWIDTH, BOARDHEIGHT, MARKERSIZE, XMARGIN, YMARGIN
     pygame.init()
@@ -69,17 +108,13 @@ def main():
                             winner = PLAYER
                         else:
                             # Make computer move
-                            tile_available = False
-                            for y in range(BOARDHEIGHT):
-                                if None in board[y]:
-                                    tile_available = True
-                                    break;
-                            if tile_available:
-                                while True:
-                                    compx = random.randint(0, BOARDWIDTH-1)
-                                    compy = random.randint(0, BOARDHEIGHT-1)
-                                    if board[compy][compx] == None:
-                                        break
+                            if tile_available(board):
+                                # while True:
+                                    # compx = random.randint(0, BOARDWIDTH-1)
+                                    # compy = random.randint(0, BOARDHEIGHT-1)
+                                    # if board[compy][compx] == None:
+                                        # break
+                                compx, compy = minimax(copy.deepcopy(board), COMPUTER)[1]
                                 board[compy][compx] = COMPUTER
                             else:
                                 game_over = True
