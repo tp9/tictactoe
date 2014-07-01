@@ -88,6 +88,26 @@ def next_player(current_player):
         next = COMPUTER
     return value, next
         
+def draw_board(displaysurf):
+    for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
+        pygame.draw.line(displaysurf, DARKGRAY, 
+           (x + XMARGIN, YMARGIN), (x + XMARGIN, WINDOWHEIGHT - YMARGIN), 6)
+    for y in range(TILESIZE, BOARDHEIGHT * TILESIZE, TILESIZE):
+        pygame.draw.line(displaysurf, DARKGRAY, 
+            (XMARGIN, y + YMARGIN), (WINDOWWIDTH - XMARGIN, y + YMARGIN), 6)
+
+def draw_tiles(displaysurf, in_board, x_surf, x_surfrect, o_surf, o_surfrect):
+   board = copy.deepcopy(in_board)
+   for y in range(len(board)):
+        for x in range(len(board[y])):
+            if board[y][x] in (PLAYER, COMPUTER):
+                if board[y][x] == PLAYER:
+                    surf, surfrect = x_surf, x_surfrect
+                elif board[y][x] == COMPUTER:
+                    surf, surfrect = o_surf, o_surfrect                
+                surfrect.center = (int(XMARGIN + (x * TILESIZE) + HALFTILE), int(YMARGIN + (y * TILESIZE) + HALFTILE))
+                displaysurf.blit(surf, surfrect)
+                    
 def minimax(board, player):
     if player_wins(board, PLAYER):
         return(-1, None)
@@ -121,6 +141,8 @@ def main():
     x_surf, x_surfrect = FONT.render('X', DARKGRAY, None)
     o_surf, o_surfrect = FONT.render('O', DARKGRAY, None)                
     
+    draw_board(displaysurf = DISPLAYSURF)
+
     while not game_over:
         # Event handler
         event = pygame.event.wait()
@@ -133,23 +155,12 @@ def main():
         elif event.type == MOUSEMOTION:
             mousex, mousey = event.pos
             
-        # Draw board lines
-        for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
-            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
-               (x + XMARGIN, YMARGIN), (x + XMARGIN, WINDOWHEIGHT - YMARGIN), 6)
-        for y in range(TILESIZE, BOARDHEIGHT * TILESIZE, TILESIZE):
-            pygame.draw.line(DISPLAYSURF, DARKGRAY, 
-                (XMARGIN, y + YMARGIN), (WINDOWWIDTH - XMARGIN, y + YMARGIN), 6)
-        # Make tile rects
-        for y in range(len(board)):
-            for x in range(len(board[y])):
-                if board[y][x] in (PLAYER, COMPUTER):
-                    if board[y][x] == PLAYER:
-                        surf, surfrect = x_surf, x_surfrect
-                    elif board[y][x] == COMPUTER:
-                        surf, surfrect = o_surf, o_surfrect                
-                    surfrect.center = (int(XMARGIN + (x * TILESIZE) + HALFTILE), int(YMARGIN + (y * TILESIZE) + HALFTILE))
-                    DISPLAYSURF.blit(surf, surfrect)
+        draw_tiles( displaysurf = DISPLAYSURF
+                    ,in_board = board
+                    ,x_surf = x_surf
+                    ,x_surfrect = x_surfrect
+                    ,o_surf = o_surf
+                    ,o_surfrect = o_surfrect )
             
         pygame.display.update()
     print(winner, "wins!")
