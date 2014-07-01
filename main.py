@@ -29,6 +29,34 @@ class BestMove():
         self.location = location
     
 
+def mouse_clicked(in_board, mousex, mousey):
+    board = copy.deepcopy(in_board)
+    game_over = False
+    winner = None
+    
+    for tiley in range(BOARDHEIGHT):
+        for tilex in range(BOARDWIDTH):
+            leftpos = tilex * TILESIZE + XMARGIN
+            toppos = tiley * TILESIZE + YMARGIN
+            tile_rect = pygame.Rect(leftpos, toppos, TILESIZE, TILESIZE)
+            if tile_rect.collidepoint(mousex, mousey) and board[tiley][tilex] == None:
+                board[tiley][tilex] = PLAYER
+                if player_wins(board, PLAYER):
+                    game_over = True
+                    winner = PLAYER
+                else:
+                    # Make computer move
+                    if tile_available(board):
+                        compx, compy = minimax(board = board, player = COMPUTER)[1]
+                        board[compy][compx] = COMPUTER
+                    else:
+                        game_over = True
+                        winner = 'No one'
+                    if player_wins(board, COMPUTER):
+                        game_over = True
+                        winner = COMPUTER
+    return board, game_over, winner
+                                
 def tile_available(board):
     tile_available = False
     for y in range(BOARDHEIGHT):
@@ -90,40 +118,21 @@ def main():
     game_over = False
     winner = None
     
+    x_surf, x_surfrect = FONT.render('X', DARKGRAY, None)
+    o_surf, o_surfrect = FONT.render('O', DARKGRAY, None)                
+    
     while not game_over:
-        mouse_clicked = False
         # Event handler
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == MOUSEBUTTONUP:
-                mousex, mousey = event.pos
-                mouse_clicked = True
-            elif event.type == MOUSEMOTION:
-                mousex, mousey = event.pos
-        if mouse_clicked:
-            for tiley in range(BOARDHEIGHT):
-                for tilex in range(BOARDWIDTH):
-                    leftpos = tilex * TILESIZE + XMARGIN
-                    toppos = tiley * TILESIZE + YMARGIN
-                    tile_rect = pygame.Rect(leftpos, toppos, TILESIZE, TILESIZE)
-                    if tile_rect.collidepoint(mousex, mousey) and board[tiley][tilex] == None:
-                        board[tiley][tilex] = PLAYER
-                        if player_wins(board, PLAYER):
-                            game_over = True
-                            winner = PLAYER
-                        else:
-                            # Make computer move
-                            if tile_available(board):
-                                compx, compy = minimax(board = board, player = COMPUTER)[1]
-                                board[compy][compx] = COMPUTER
-                            else:
-                                game_over = True
-                                winner = 'No one'
-                            if player_wins(board, COMPUTER):
-                                game_over = True
-                                winner = COMPUTER
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == MOUSEBUTTONUP:
+            mousex, mousey = event.pos
+            board, game_over, winner = mouse_clicked(in_board = board, mousex = mousex, mousey = mousey)
+        elif event.type == MOUSEMOTION:
+            mousex, mousey = event.pos
+            
         # Draw board lines
         for x in range(TILESIZE, BOARDWIDTH * TILESIZE, TILESIZE):
             pygame.draw.line(DISPLAYSURF, DARKGRAY, 
@@ -136,9 +145,9 @@ def main():
             for x in range(len(board[y])):
                 if board[y][x] in (PLAYER, COMPUTER):
                     if board[y][x] == PLAYER:
-                        surf, surfrect = FONT.render('X', DARKGRAY, None)
+                        surf, surfrect = x_surf, x_surfrect
                     elif board[y][x] == COMPUTER:
-                        surf, surfrect = FONT.render('O', DARKGRAY, None)                
+                        surf, surfrect = o_surf, o_surfrect                
                     surfrect.center = (int(XMARGIN + (x * TILESIZE) + HALFTILE), int(YMARGIN + (y * TILESIZE) + HALFTILE))
                     DISPLAYSURF.blit(surf, surfrect)
             
